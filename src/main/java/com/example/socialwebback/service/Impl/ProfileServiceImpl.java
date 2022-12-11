@@ -106,7 +106,6 @@ public class ProfileServiceImpl implements ProfileService {
         if (profile.getCover() != null)
             profileDto.setCoverId(profile.getCover().getId());
         profileDto.setSubscribersCount(profile.getSubscribers().size());
-        profileDto.setPosts(profile.getPosts());
         return profileDto;
     }
 }

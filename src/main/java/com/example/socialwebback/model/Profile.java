@@ -60,4 +60,9 @@ public class Profile {
         setCover(cover);
         cover.setProfile(this);
     }
+
+    public void addPost(Post post) {
+        posts.add(post);
+        post.setProfile(this);
+    }
 }

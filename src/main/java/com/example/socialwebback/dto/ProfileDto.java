@@ -1,9 +1,7 @@
 package com.example.socialwebback.dto;
 
-import com.example.socialwebback.model.Post;
-import lombok.Data;
 
-import java.util.List;
+import lombok.Data;
 
 @Data
 public class ProfileDto {
@@ -14,6 +12,4 @@ public class ProfileDto {
     private Long coverId;
 
     private int subscribersCount;
-
-    private List<Post> posts;
 }

@@ -40,4 +40,9 @@ public class Post {
     public void setComments(List<Comment> comments) {
         this.comments = comments;
     }
+
+    public void addImage(Image image) {
+        setImage(image);
+        image.setPost(this);
+    }
 }
