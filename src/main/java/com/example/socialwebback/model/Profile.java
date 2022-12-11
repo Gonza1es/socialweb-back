@@ -1,15 +1,16 @@
 package com.example.socialwebback.model;
 
-import javax.persistence.*;
-import lombok.Data;
+import lombok.*;
+import org.hibernate.Hibernate;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import javax.persistence.*;
+import java.util.*;
 
 @Entity
-@Data
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
 public class Profile {
 
     @Id
@@ -32,6 +33,7 @@ public class Profile {
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY,
             mappedBy = "profile")
+    @ToString.Exclude
     private List<Post> posts = new ArrayList<>();
 
     @ManyToMany
@@ -40,6 +42,7 @@ public class Profile {
             joinColumns = {@JoinColumn(name = "subscriber_id") },
             inverseJoinColumns = {@JoinColumn(name = "channel_id") }
     )
+    @ToString.Exclude
     private Set<Profile> subscriptions = new HashSet<>();
 
     @ManyToMany
@@ -48,6 +51,7 @@ public class Profile {
             joinColumns = {@JoinColumn(name = "channel_id") },
             inverseJoinColumns = {@JoinColumn(name = "subscriber_id") }
     )
+    @ToString.Exclude
     private Set<Profile> subscribers = new HashSet<>();
 
 
@@ -64,5 +68,18 @@ public class Profile {
     public void addPost(Post post) {
         posts.add(post);
         post.setProfile(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        Profile profile = (Profile) o;
+        return id != null && Objects.equals(id, profile.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }

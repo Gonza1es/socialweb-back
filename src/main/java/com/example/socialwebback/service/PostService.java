@@ -17,4 +17,6 @@ public interface PostService {
     List<PostDto> getPostCurrentProfile();
 
     void incrementLike(Long postId);
+
+    List<PostDto> getUserPosts(String username);
 }

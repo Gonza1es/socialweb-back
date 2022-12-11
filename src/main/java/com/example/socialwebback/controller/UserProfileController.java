@@ -2,6 +2,7 @@ package com.example.socialwebback.controller;
 
 import com.example.socialwebback.dto.AddProfileInfo;
 import com.example.socialwebback.dto.ProfileDto;
+import com.example.socialwebback.dto.UserProfileDto;
 import com.example.socialwebback.model.User;
 import com.example.socialwebback.service.ProfileService;
 import com.example.socialwebback.service.UserService;
@@ -33,10 +34,21 @@ public class UserProfileController {
     }
 
     @GetMapping("/{username}")
-    public ProfileDto getProfileByUsername(@PathVariable String username) {
+    public UserProfileDto getProfileByUsername(@PathVariable String username) {
         User user = userService.getUserByUsername(username);
         return profileService.getProfileInfo(user.getId());
     }
+
+    @GetMapping("/subscribe/{username}")
+    public void subscribe(@PathVariable String username) {
+        profileService.subscribe(username);
+    }
+
+    @GetMapping("/unsubscribe/{username}")
+    public void unsubscribe(@PathVariable String username) {
+        profileService.unsubscribe(username);
+    }
+
 
     @PostMapping(value = "/editProfile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public void editProfile(@RequestPart(required = false) String alias,

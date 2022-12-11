@@ -2,6 +2,7 @@ package com.example.socialwebback.service;
 
 import com.example.socialwebback.dto.AddProfileInfo;
 import com.example.socialwebback.dto.ProfileDto;
+import com.example.socialwebback.dto.UserProfileDto;
 import com.example.socialwebback.model.User;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,5 +18,9 @@ public interface ProfileService {
 
     ProfileDto getProfileInfoCurrentUser();
 
-    ProfileDto getProfileInfo(Long userId);
+    UserProfileDto getProfileInfo(Long userId);
+
+    void subscribe(String username);
+
+    void unsubscribe(String username);
 }

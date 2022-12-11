@@ -39,4 +39,9 @@ public class PostController {
 
         postService.incrementLike(postId);
     }
+
+    @GetMapping("/{username}")
+    public List<PostDto> getUserPosts(@PathVariable String username) {
+        return postService.getUserPosts(username);
+    }
 }

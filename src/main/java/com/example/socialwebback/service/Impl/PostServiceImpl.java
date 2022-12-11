@@ -1,12 +1,10 @@
 package com.example.socialwebback.service.Impl;
 
 import com.example.socialwebback.dto.PostDto;
-import com.example.socialwebback.model.Cover;
-import com.example.socialwebback.model.Image;
-import com.example.socialwebback.model.Post;
-import com.example.socialwebback.model.Profile;
+import com.example.socialwebback.model.*;
 import com.example.socialwebback.repository.PostRepository;
 import com.example.socialwebback.repository.ProfileRepository;
+import com.example.socialwebback.repository.UserRepository;
 import com.example.socialwebback.service.PostService;
 import com.example.socialwebback.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,10 +25,13 @@ public class PostServiceImpl implements PostService {
 
     private PostRepository postRepository;
 
+    private UserRepository userRepository;
+
     @Autowired
-    public PostServiceImpl(ProfileRepository profileRepository, PostRepository postRepository) {
+    public PostServiceImpl(ProfileRepository profileRepository, PostRepository postRepository, UserRepository userRepository) {
         this.profileRepository = profileRepository;
         this.postRepository = postRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -64,6 +66,36 @@ public class PostServiceImpl implements PostService {
             post.setLikes(like);
             postRepository.save(post);
         }
+    }
+
+    @Override
+    public List<PostDto> getUserPosts(String username) {
+        User user = userRepository.findByUsername(username);
+        Profile profile = profileRepository.findByUserId(user.getId());
+        List<Post> posts = postRepository.findAllByProfileId(profile.getId());
+        List<PostDto> postDtos = new ArrayList<>();
+        for (Post post : posts) {
+            PostDto dto = convertToPostDtoForUser(post, profile, username);
+            postDtos.add(dto);
+        }
+        return postDtos;
+    }
+
+    private PostDto convertToPostDtoForUser(Post post, Profile profile, String username) {
+        PostDto dto = new PostDto();
+        dto.setId(post.getId());
+        dto.setUsername(username);
+        dto.setAliasProfile(profile.getAlias());
+        if (profile.getAvatar() != null)
+            dto.setAvatarId(profile.getAvatar().getId());
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        dto.setCreationDate(post.getCreationDate().format(dateTimeFormatter));
+        dto.setLikes(post.getLikes());
+        dto.setText(post.getText());
+        dto.setComment(post.getComments());
+        if (post.getImage() != null)
+            dto.setImageId(post.getImage().getId());
+        return dto;
     }
 
     private PostDto convertToPostDto(Post post) {

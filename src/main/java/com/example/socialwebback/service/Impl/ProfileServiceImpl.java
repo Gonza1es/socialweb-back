@@ -2,6 +2,7 @@ package com.example.socialwebback.service.Impl;
 
 import com.example.socialwebback.dto.AddProfileInfo;
 import com.example.socialwebback.dto.ProfileDto;
+import com.example.socialwebback.dto.UserProfileDto;
 import com.example.socialwebback.model.Avatar;
 import com.example.socialwebback.model.Cover;
 import com.example.socialwebback.model.Profile;
@@ -9,6 +10,7 @@ import com.example.socialwebback.model.User;
 import com.example.socialwebback.repository.AvatarRepository;
 import com.example.socialwebback.repository.CoverRepository;
 import com.example.socialwebback.repository.ProfileRepository;
+import com.example.socialwebback.repository.UserRepository;
 import com.example.socialwebback.service.ProfileService;
 import com.example.socialwebback.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,11 +29,17 @@ public class ProfileServiceImpl implements ProfileService {
 
     private CoverRepository coverRepository;
 
+    private UserRepository userRepository;
+
     @Autowired
-    public ProfileServiceImpl(ProfileRepository profileRepository, AvatarRepository avatarRepository, CoverRepository coverRepository) {
+    public ProfileServiceImpl(ProfileRepository profileRepository,
+                              AvatarRepository avatarRepository,
+                              CoverRepository coverRepository,
+                              UserRepository userRepository) {
         this.profileRepository = profileRepository;
         this.avatarRepository = avatarRepository;
         this.coverRepository = coverRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -43,9 +51,43 @@ public class ProfileServiceImpl implements ProfileService {
 
 
     @Override
-    public ProfileDto getProfileInfo(Long userId) {
+    public UserProfileDto getProfileInfo(Long userId) {
         Profile profile = profileRepository.findByUserId(userId);
-        return convertToProfileDto(profile);
+        return convertToUserProfileDto(profile);
+    }
+
+    @Override
+    public void subscribe(String username) {
+        User user = userRepository.findByUsername(username);
+        Profile userProfile = profileRepository.findByUserId(user.getId());
+        Profile currentUserProfile = profileRepository.findByUserId(UserUtils.getCurrentUser().getId());
+        userProfile.getSubscribers().add(currentUserProfile);
+
+        profileRepository.save(userProfile);
+    }
+
+    @Override
+    public void unsubscribe(String username) {
+        User user = userRepository.findByUsername(username);
+        Profile userProfile = profileRepository.findByUserId(user.getId());
+        Profile currentUserProfile = profileRepository.findByUserId(UserUtils.getCurrentUser().getId());
+        userProfile.getSubscribers().remove(currentUserProfile);
+
+        profileRepository.save(userProfile);
+    }
+
+    private UserProfileDto convertToUserProfileDto(Profile profile) {
+        UserProfileDto userProfileDto = new UserProfileDto();
+        userProfileDto.setAliasProfile(profile.getAlias());
+        userProfileDto.setStatus(profile.getStatus());
+        if (profile.getAvatar() != null)
+            userProfileDto.setAvatarId(profile.getAvatar().getId());
+        if (profile.getCover() != null)
+            userProfileDto.setCoverId(profile.getCover().getId());
+        userProfileDto.setSubscribersCount(profile.getSubscribers().size());
+        userProfileDto.setIsSubscribed(profile.getSubscribers().contains(profileRepository.findByUserId(UserUtils.getCurrentUser().getId())));
+
+        return userProfileDto;
     }
 
     @Transactional
