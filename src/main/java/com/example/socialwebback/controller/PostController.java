@@ -1,6 +1,10 @@
 package com.example.socialwebback.controller;
 
+import com.example.socialwebback.dto.AddComment;
+import com.example.socialwebback.dto.CommentDto;
 import com.example.socialwebback.dto.PostDto;
+import com.example.socialwebback.model.Comment;
+import com.example.socialwebback.model.Post;
 import com.example.socialwebback.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -43,5 +47,20 @@ public class PostController {
     @GetMapping("/{username}")
     public List<PostDto> getUserPosts(@PathVariable String username) {
         return postService.getUserPosts(username);
+    }
+
+    @GetMapping("/feed")
+    public List<PostDto> getFeed() {
+        return postService.getPostsForFeed();
+    }
+
+    @PostMapping(value = "/addComment")
+    public void addComment(@RequestBody AddComment addComment) {
+        postService.createComment(addComment.getPostId(), addComment.getText());
+    }
+
+    @GetMapping(value = "/comment/{postId}")
+    public List<CommentDto> getComments(@PathVariable Long postId) {
+        return postService.getComments(postId);
     }
 }

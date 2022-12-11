@@ -15,5 +15,5 @@ public class PostDto {
     private String text;
     private String creationDate;
     private Integer likes;
-    private List<Comment> comment;
+    private int commentsCount;
 }

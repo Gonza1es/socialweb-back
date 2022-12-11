@@ -11,8 +11,9 @@ public class Comment {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "post_id")
+    private String text;
+
+    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
     private Post post;
 
     public Post getPost() {
@@ -31,4 +32,11 @@ public class Comment {
         this.id = id;
     }
 
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
 }

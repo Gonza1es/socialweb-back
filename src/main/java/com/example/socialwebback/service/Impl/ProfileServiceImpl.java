@@ -2,6 +2,7 @@ package com.example.socialwebback.service.Impl;
 
 import com.example.socialwebback.dto.AddProfileInfo;
 import com.example.socialwebback.dto.ProfileDto;
+import com.example.socialwebback.dto.SubscriptionsDto;
 import com.example.socialwebback.dto.UserProfileDto;
 import com.example.socialwebback.model.Avatar;
 import com.example.socialwebback.model.Cover;
@@ -19,6 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ProfileServiceImpl implements ProfileService {
@@ -74,6 +78,25 @@ public class ProfileServiceImpl implements ProfileService {
         userProfile.getSubscribers().remove(currentUserProfile);
 
         profileRepository.save(userProfile);
+    }
+
+    @Override
+    public List<SubscriptionsDto> getSubscriptions() {
+        Profile profile = profileRepository.findByUserId(UserUtils.getCurrentUser().getId());
+        if (profile.getSubscriptions().size() != 0)
+            return profile.getSubscriptions()
+                .stream()
+                .map(this::convertToSubscriptionsDto)
+                .collect(Collectors.toList());
+        else return Collections.emptyList();
+    }
+
+    private SubscriptionsDto convertToSubscriptionsDto(Profile profile) {
+        SubscriptionsDto dto = new SubscriptionsDto();
+        User user = userRepository.findById(profile.getUserId()).orElse(null);
+        dto.setUsername(user.getUsername());
+        dto.setAvatarId(profile.getAvatar().getId());
+        return dto;
     }
 
     private UserProfileDto convertToUserProfileDto(Profile profile) {

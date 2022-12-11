@@ -2,6 +2,7 @@ package com.example.socialwebback.controller;
 
 import com.example.socialwebback.dto.AddProfileInfo;
 import com.example.socialwebback.dto.ProfileDto;
+import com.example.socialwebback.dto.SubscriptionsDto;
 import com.example.socialwebback.dto.UserProfileDto;
 import com.example.socialwebback.model.User;
 import com.example.socialwebback.service.ProfileService;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @CrossOrigin
@@ -57,5 +59,10 @@ public class UserProfileController {
                             @RequestPart(required = false) MultipartFile cover) throws IOException {
         AddProfileInfo addProfileInfo = new AddProfileInfo(alias, status);
         profileService.editProfile(addProfileInfo, avatar, cover);
+    }
+
+    @GetMapping("/subscriptions")
+    public List<SubscriptionsDto> getSubscriptions() {
+        return profileService.getSubscriptions();
     }
 }

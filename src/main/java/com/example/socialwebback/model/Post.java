@@ -35,7 +35,8 @@ public class Post {
 
     private Integer likes = 0;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "post")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER,
+            mappedBy = "post")
     private List<Comment> comments = new ArrayList<>();
 
     public List<Comment> getComments() {
@@ -49,6 +50,11 @@ public class Post {
     public void addImage(Image image) {
         setImage(image);
         image.setPost(this);
+    }
+
+    public void addComment(Comment comment) {
+        getComments().add(comment);
+        comment.setPost(this);
     }
 
     @Override

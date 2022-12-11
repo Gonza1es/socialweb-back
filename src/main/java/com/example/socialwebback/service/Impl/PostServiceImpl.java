@@ -1,5 +1,6 @@
 package com.example.socialwebback.service.Impl;
 
+import com.example.socialwebback.dto.CommentDto;
 import com.example.socialwebback.dto.PostDto;
 import com.example.socialwebback.model.*;
 import com.example.socialwebback.repository.PostRepository;
@@ -81,6 +82,47 @@ public class PostServiceImpl implements PostService {
         return postDtos;
     }
 
+    @Override
+    public List<PostDto> getPostsForFeed() {
+        Profile profile = profileRepository.findByUserId(UserUtils.getCurrentUser().getId());
+        List<PostDto> postsCurrentUser = getPostCurrentProfile();
+        List<PostDto> postsSubscriptions = new ArrayList<>();
+        if (profile.getSubscriptions().size() != 0){
+            for (Profile profileSubs: profile.getSubscriptions()) {
+                List<PostDto> postDtos = getPostFeed(profileSubs);
+                postsSubscriptions.addAll(postDtos);
+            }
+            postsCurrentUser.addAll(postsSubscriptions);
+        }
+        return postsCurrentUser;
+    }
+
+    @Override
+    public void createComment(Long postId, String text) {
+        Post post = postRepository.findById(postId).orElse(null);
+        Comment comment = new Comment();
+        comment.setText(text);
+        post.addComment(comment);
+
+        postRepository.save(post);
+    }
+
+    @Override
+    public List<CommentDto> getComments(Long postId) {
+        return null;
+    }
+
+    private List<PostDto> getPostFeed(Profile profile) {
+        User user = userRepository.findById(profile.getUserId()).orElse(null);
+        List<Post> posts = postRepository.findAllByProfileId(profile.getId());
+        List<PostDto> postDtos = new ArrayList<>();
+        for (Post post : posts) {
+            PostDto dto = convertToPostDtoForUser(post, profile, user.getUsername());
+            postDtos.add(dto);
+        }
+        return postDtos;
+    }
+
     private PostDto convertToPostDtoForUser(Post post, Profile profile, String username) {
         PostDto dto = new PostDto();
         dto.setId(post.getId());
@@ -92,7 +134,7 @@ public class PostServiceImpl implements PostService {
         dto.setCreationDate(post.getCreationDate().format(dateTimeFormatter));
         dto.setLikes(post.getLikes());
         dto.setText(post.getText());
-        dto.setComment(post.getComments());
+        dto.setCommentsCount(post.getComments().size());
         if (post.getImage() != null)
             dto.setImageId(post.getImage().getId());
         return dto;
@@ -110,7 +152,7 @@ public class PostServiceImpl implements PostService {
         dto.setCreationDate(post.getCreationDate().format(dateTimeFormatter));
         dto.setLikes(post.getLikes());
         dto.setText(post.getText());
-        dto.setComment(post.getComments());
+        dto.setCommentsCount(post.getComments().size());
         if (post.getImage() != null)
             dto.setImageId(post.getImage().getId());
         return dto;
