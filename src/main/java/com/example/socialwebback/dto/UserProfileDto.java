@@ -9,5 +9,6 @@ public class UserProfileDto {
     private Long avatarId;
     private Long coverId;
     private int subscribersCount;
+    private Boolean isActiveUser;
     private Boolean isSubscribed;
 }

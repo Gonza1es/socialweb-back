@@ -51,7 +51,7 @@ public class AuthController {
             }
             String token = jwtTokenProvider.createToken(username, user.getRoles());
 
-            return new ResponseMessage(token, user.getIsFirstVisit());
+            return new ResponseMessage(token, user.getIsActive());
         } catch (AuthenticationException e) {
             return ErrorDescription.WRONG_LOGIN_OR_PASSWORD.createException();
         }
@@ -69,7 +69,7 @@ public class AuthController {
         return null;
     }
 
-    @PostMapping("/adminReg")
+    @PostMapping("/adminReq")
     public void registerAdmin(@RequestBody User user) {
         userService.registAdmin(user);
     }

@@ -10,6 +10,6 @@ public class ProfileDto {
     private String status;
     private Long avatarId;
     private Long coverId;
-
+    private Boolean isActiveUser;
     private int subscribersCount;
 }

@@ -22,7 +22,7 @@ public class User {
     private String username;
     private String email;
     private String password;
-    private Boolean isFirstVisit;
+    private Boolean isActive;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_roles",

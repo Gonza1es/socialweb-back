@@ -109,7 +109,7 @@ public class ProfileServiceImpl implements ProfileService {
             userProfileDto.setCoverId(profile.getCover().getId());
         userProfileDto.setSubscribersCount(profile.getSubscribers().size());
         userProfileDto.setIsSubscribed(profile.getSubscribers().contains(profileRepository.findByUserId(UserUtils.getCurrentUser().getId())));
-
+        userProfileDto.setIsActiveUser(userRepository.findById(profile.getUserId()).get().getIsActive());
         return userProfileDto;
     }
 
@@ -171,6 +171,7 @@ public class ProfileServiceImpl implements ProfileService {
         if (profile.getCover() != null)
             profileDto.setCoverId(profile.getCover().getId());
         profileDto.setSubscribersCount(profile.getSubscribers().size());
+        profileDto.setIsActiveUser(userRepository.findById(profile.getUserId()).get().getIsActive());
         return profileDto;
     }
 }

@@ -39,7 +39,7 @@ public class UserServiceImpl implements UserService {
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRoles(userRoles);
-        user.setIsFirstVisit(Boolean.TRUE);
+        user.setIsActive(Boolean.TRUE);
 
 
         userRepository.saveAndFlush(user);
@@ -53,15 +53,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void setFirstVisit() {
-        User user = userRepository.findByUsername(UserUtils.getCurrentUser().getUsername());
-        if (user.getIsFirstVisit().equals(Boolean.TRUE)) {
-            user.setIsFirstVisit(Boolean.FALSE);
-            userRepository.save(user);
-        }
-    }
-
-    @Override
     public void registAdmin(User user) {
         Role roleAdmin = roleRepository.findByName("ROLE_ADMIN");
         List<Role> userRoles = new ArrayList<>();
@@ -69,7 +60,7 @@ public class UserServiceImpl implements UserService {
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRoles(userRoles);
-        user.setIsFirstVisit(Boolean.TRUE);
+        user.setIsActive(Boolean.TRUE);
         userRepository.saveAndFlush(user);
     }
 

@@ -10,7 +10,5 @@ public interface UserService {
 
     User getUserByUsername(String Username);
 
-    void setFirstVisit();
-
     void registAdmin(User user);
 }
