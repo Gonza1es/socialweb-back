@@ -12,4 +12,5 @@ public interface UserService {
 
     void setFirstVisit();
 
+    void registAdmin(User user);
 }

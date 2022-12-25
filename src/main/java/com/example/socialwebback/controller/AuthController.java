@@ -69,4 +69,9 @@ public class AuthController {
         return null;
     }
 
+    @PostMapping("/adminReg")
+    public void registerAdmin(@RequestBody User user) {
+        userService.registAdmin(user);
+    }
+
 }

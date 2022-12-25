@@ -32,6 +32,10 @@ public class Profile {
     private Cover cover;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY,
+                mappedBy = "profile")
+    private List<Comment> comments;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY,
             mappedBy = "profile")
     @ToString.Exclude
     private List<Post> posts = new ArrayList<>();

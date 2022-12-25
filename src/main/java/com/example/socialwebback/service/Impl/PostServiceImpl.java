@@ -3,6 +3,7 @@ package com.example.socialwebback.service.Impl;
 import com.example.socialwebback.dto.CommentDto;
 import com.example.socialwebback.dto.PostDto;
 import com.example.socialwebback.model.*;
+import com.example.socialwebback.repository.CommentRepository;
 import com.example.socialwebback.repository.PostRepository;
 import com.example.socialwebback.repository.ProfileRepository;
 import com.example.socialwebback.repository.UserRepository;
@@ -28,11 +29,17 @@ public class PostServiceImpl implements PostService {
 
     private UserRepository userRepository;
 
+    private CommentRepository commentRepository;
+
     @Autowired
-    public PostServiceImpl(ProfileRepository profileRepository, PostRepository postRepository, UserRepository userRepository) {
+    public PostServiceImpl(ProfileRepository profileRepository,
+                           PostRepository postRepository,
+                           UserRepository userRepository,
+                           CommentRepository commentRepository) {
         this.profileRepository = profileRepository;
         this.postRepository = postRepository;
         this.userRepository = userRepository;
+        this.commentRepository = commentRepository;
     }
 
     @Override
@@ -102,14 +109,27 @@ public class PostServiceImpl implements PostService {
         Post post = postRepository.findById(postId).orElse(null);
         Comment comment = new Comment();
         comment.setText(text);
+        comment.setProfile(profileRepository.findByUserId(UserUtils.getCurrentUser().getId()));
+        comment.setCreationDate(LocalDateTime.now());
         post.addComment(comment);
-
         postRepository.save(post);
     }
 
     @Override
     public List<CommentDto> getComments(Long postId) {
-        return null;
+        return commentRepository.findAllByPostId(postId).stream()
+                .map(this::ConvertToCommentDto)
+                .collect(Collectors.toList());
+    }
+
+    private CommentDto ConvertToCommentDto(Comment comment) {
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        CommentDto dto = new CommentDto();
+        dto.setProfileAlias(comment.getProfile().getAlias());
+        dto.setText(comment.getText());
+        dto.setAvatarId(comment.getProfile().getAvatar().getId());
+        dto.setCreationDate(comment.getCreationDate().format(dateTimeFormatter));
+        return dto;
     }
 
     private List<PostDto> getPostFeed(Profile profile) {
@@ -135,6 +155,7 @@ public class PostServiceImpl implements PostService {
         dto.setLikes(post.getLikes());
         dto.setText(post.getText());
         dto.setCommentsCount(post.getComments().size());
+        dto.setComments(getComments(post.getId()));
         if (post.getImage() != null)
             dto.setImageId(post.getImage().getId());
         return dto;
@@ -153,6 +174,7 @@ public class PostServiceImpl implements PostService {
         dto.setLikes(post.getLikes());
         dto.setText(post.getText());
         dto.setCommentsCount(post.getComments().size());
+        dto.setComments(getComments(post.getId()));
         if (post.getImage() != null)
             dto.setImageId(post.getImage().getId());
         return dto;

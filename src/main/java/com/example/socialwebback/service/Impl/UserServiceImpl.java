@@ -61,5 +61,17 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Override
+    public void registAdmin(User user) {
+        Role roleAdmin = roleRepository.findByName("ROLE_ADMIN");
+        List<Role> userRoles = new ArrayList<>();
+        userRoles.add(roleAdmin);
+
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setRoles(userRoles);
+        user.setIsFirstVisit(Boolean.TRUE);
+        userRepository.saveAndFlush(user);
+    }
+
 
 }
