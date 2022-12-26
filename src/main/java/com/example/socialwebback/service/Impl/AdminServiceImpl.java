@@ -78,7 +78,8 @@ public class AdminServiceImpl implements AdminService {
         dto.setId(user.getId());
         dto.setUsername(user.getUsername());
         Profile profile = profileRepository.findByUserId(user.getId());
-        dto.setAvatarId(profile.getAvatar().getId());
+        if (profile.getAvatar() != null)
+            dto.setAvatarId(profile.getAvatar().getId());
         dto.setProfileAlias(profile.getAlias());
 
         return dto;

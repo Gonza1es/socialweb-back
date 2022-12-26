@@ -63,4 +63,9 @@ public class PostController {
     public List<CommentDto> getComments(@PathVariable Long postId) {
         return postService.getComments(postId);
     }
+
+    @GetMapping(value = "/report/{postId}")
+    public void createReport(@PathVariable Long postId) {
+        postService.createReport(postId);
+    }
 }

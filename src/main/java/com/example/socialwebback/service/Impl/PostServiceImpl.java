@@ -3,10 +3,7 @@ package com.example.socialwebback.service.Impl;
 import com.example.socialwebback.dto.CommentDto;
 import com.example.socialwebback.dto.PostDto;
 import com.example.socialwebback.model.*;
-import com.example.socialwebback.repository.CommentRepository;
-import com.example.socialwebback.repository.PostRepository;
-import com.example.socialwebback.repository.ProfileRepository;
-import com.example.socialwebback.repository.UserRepository;
+import com.example.socialwebback.repository.*;
 import com.example.socialwebback.service.PostService;
 import com.example.socialwebback.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,23 +20,27 @@ import java.util.stream.Collectors;
 @Service
 public class PostServiceImpl implements PostService {
 
-    private ProfileRepository profileRepository;
+    private final ProfileRepository profileRepository;
 
-    private PostRepository postRepository;
+    private final PostRepository postRepository;
 
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    private CommentRepository commentRepository;
+    private final CommentRepository commentRepository;
+
+    private final ReportRepository reportRepository;
 
     @Autowired
     public PostServiceImpl(ProfileRepository profileRepository,
                            PostRepository postRepository,
                            UserRepository userRepository,
-                           CommentRepository commentRepository) {
+                           CommentRepository commentRepository,
+                           ReportRepository reportRepository) {
         this.profileRepository = profileRepository;
         this.postRepository = postRepository;
         this.userRepository = userRepository;
         this.commentRepository = commentRepository;
+        this.reportRepository = reportRepository;
     }
 
     @Override
@@ -120,6 +121,14 @@ public class PostServiceImpl implements PostService {
         return commentRepository.findAllByPostId(postId).stream()
                 .map(this::ConvertToCommentDto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void createReport(Long postId) {
+        Report report = new Report();
+        report.setReporterUsername(UserUtils.getCurrentUser().getUsername());
+        report.setPostId(postId);
+        reportRepository.saveAndFlush(report);
     }
 
     private CommentDto ConvertToCommentDto(Comment comment) {

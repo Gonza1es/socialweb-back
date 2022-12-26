@@ -25,4 +25,6 @@ public interface PostService {
     void createComment(Long postId, String text);
 
     List<CommentDto> getComments(Long postId);
+
+    void createReport(Long postId);
 }
